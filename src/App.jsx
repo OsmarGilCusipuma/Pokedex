@@ -4,7 +4,7 @@ import Modal from './components/Modal'
 function App() {
 
   const [list, setList] = useState([])
-  const [page,setPage] = useState()
+  const [page,setPage] = useState(1)
   const [modal,setModal] = useState(false)
   const [id,setId] = useState(1)
   const paginator = ["1","2","3","4","5"]
@@ -12,6 +12,37 @@ function App() {
   useEffect(()=>{
     getURLs()
   },[page])
+
+  const colorType = (type)=>{
+    let color = ''
+
+    switch(type){
+      case 'grass': color='bg-lime-500'
+        break;
+      case 'poison': color='bg-violet-600'
+        break;
+      case 'flying': color='bg-blue-200'
+        break;
+      case 'bug': color='bg-green-600'
+        break;
+      case 'fire': color='bg-red-600'
+        break;
+      case 'water': color='bg-blue-600'
+        break;
+      case 'ground': color='bg-amber-800'
+        break
+      default: color='bg-slate-400'
+        break;
+    }
+
+    return color
+  }
+
+  /*
+  
+    Para trabajar useEffect con [url] al hacer clicl en las paginas, el onClick deberia cambiar la url
+
+  */
 
   async function getURLs(){
     const url = `https://pokeapi.co/api/v2/pokemon/?limit=20&offset=${((page-1)*20)}`
@@ -21,26 +52,33 @@ function App() {
       return {
         name: data.name,
         sprite: data.sprites.front_default,
-        id: data.id
+        id: data.id,
+        types: data.types
       }
     }))
     setList(pokemonData)
   }
-
+  
   function clickModal(idPokemon){
     setId(idPokemon)
     setModal(!modal)
   }
-
   return (
     <div className="App">
-      <div className='grid grid-cols-4'>
+      <div className='grid lg:grid-cols-4 grid-cols-2'>
         {
           list.map((li,idx)=>(
-            <div className='mx-auto' key={idx}>
-              <p>{li.name}</p>
+            <div className='mx-auto flex flex-col justify-center' key={idx}>
               <img src={li.sprite}></img>
-              <button type='button' className='border border-red-600' onClick={()=>clickModal(li.id)}>Open</button>
+              <button type='button' className='bg-amber-400 rounded-md cursor-pointer' onClick={()=>clickModal(li.id)}>Open</button>
+              <div>
+                {
+                  li.types.map((ty,idx)=>(
+                    <h2 className={`${colorType(ty.type.name)} rounded-full text-center text-white uppercase font-bold`} key={idx}>{ty.type.name}</h2>
+                  ))
+                }
+              </div>
+              <h1 className='uppercase font-bold'>{li.name}</h1>
             </div>
           ))
         }
