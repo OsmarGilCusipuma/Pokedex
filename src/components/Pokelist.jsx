@@ -10,28 +10,42 @@ function Pokelist() {
   const [page,setPage] = useState(1)
   const [modal,setModal] = useState(false)
   const [id,setId] = useState(1)
-  const paginator = ["1","2","3","4","5"]
 
-  useEffect(()=>{
-    getURLs()
+  useEffect( ()=>{
+
+    const controller = new AbortController()
+
+    const fetchData = async ()=>{
+      try {
+        const url = `https://pokeapi.co/api/v2/pokemon/?limit=20&offset=${((page-1)*20)}`
+
+        const response = await fetch(url, {signal: controller.signal})
+        const prev = await response.json()
+        const data = prev.results
+  
+        const pokemonData = await Promise.all(data.map( async poki=>{
+          const data = await fetch(poki.url).then(pre=>pre.json())
+          return {
+            name: data.name,
+            sprite: data.sprites.front_default,
+            id: data.id,
+            types: data.types
+          }
+        }))
+        setList(pokemonData)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchData()
+
+    return ()=>{
+      controller.abort()
+    }
   },[page])
 
   //To work with url inside useEffect -> By clicking each page, onClick should change status url
-
-  async function getURLs(){
-    const url = `https://pokeapi.co/api/v2/pokemon/?limit=20&offset=${((page-1)*20)}`
-    const response = await fetch(url).then(pre=>pre.json()).then(data=>data.results)
-    const pokemonData = await Promise.all(response.map( async poki=>{
-      const data = await fetch(poki.url).then(pre=>pre.json())
-      return {
-        name: data.name,
-        sprite: data.sprites.front_default,
-        id: data.id,
-        types: data.types
-      }
-    }))
-    setList(pokemonData)
-  }
 
   function handlePage(pag){
     setPage(pag)
@@ -43,7 +57,7 @@ function Pokelist() {
   }
   return (
     <div className="Pokelist min-h-screen">
-      <div className='grid lg:grid-cols-4 grid-cols-2'>
+      <div className='grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2'>
         {
           list.map((li,idx)=>(
             <div className={`${colorType(li.types[0].type.name)} text-white uppercase font-bold rounded-xl m-3 flex flex-row-reverse justify-center items-center`} key={idx}>

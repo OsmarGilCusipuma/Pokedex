@@ -2,21 +2,21 @@ const colorType = (type)=>{
     let color = ''
 
     switch(type){
-      case 'grass': color='bg-green-300'
+      case 'grass': color='bg-[#42ceb1]'
         break;
       case 'poison': color='bg-violet-600'
         break;
       case 'flying': color='bg-sky-300'
         break;
-      case 'bug': color='bg-teal-500'
+      case 'bug': color='bg-teal-600'
         break;
-      case 'fire': color='bg-red-500'
+      case 'fire': color='bg-[#FB6D6C]'
         break;
-      case 'water': color='bg-blue-600'
+      case 'water': color='bg-[#42ceb1]'
         break;
       case 'ground': color='bg-amber-800'
         break
-      case 'electric': color='bg-amber-300'
+      case 'electric': color='bg-[#fed770]'
         break;
       case 'fairy': color='bg-pink-400'
         break;
